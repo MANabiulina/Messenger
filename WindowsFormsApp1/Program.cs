@@ -1,22 +1,41 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+using Newtonsoft.Json;
 
-namespace WindowsFormsApp1
+namespace Messenger
 {
-    static class Program
+    class Program
     {
-        /// <summary>
-        /// Главная точка входа для приложения.
-        /// </summary>
-        [STAThread]
-        static void Main()
+        private static int MessageID;
+        private static string UserName;
+        private static Client API = new Client();
+
+        private static void GetNewMessenges()
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Message msg = API.GetMessage(MessageID);
+            while (msg != null)
+            {
+                Console.WriteLine(msg);
+                MessageID++;
+                msg = API.GetMessage(MessageID);
+            }
+        }
+
+        static void Main(string[] args)
+        {
+            MessageID = 1;
+            Console.WriteLine("Введите Ваше имя:");
+            UserName = Console.ReadLine();
+            string MessageText = "";
+            while (MessageText != "Выход")
+            {
+                GetNewMessenges();
+                MessageText = Console.ReadLine();
+                if (MessageText.Length > 1)
+                {
+                    Message Sendmsg = new Message(UserName, MessageText, DateTime.Now);
+                    API.SendMessage(Sendmsg);
+                }
+            }
         }
     }
 }
